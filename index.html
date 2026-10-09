@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reva: Raw Materials Hub (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff;--surface:#fff;--ink:#0E2A22;--muted:#5A6E65;--line:#E3E8E3;--green:#022D24;--gold:#CFB03C;--goldink:#6B5A10;--ok:#1E7A4F;--chip:#F1F5EF;color-scheme:light}
+*,*:before,*:after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:400 15px/1.5 Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:#fff;color:var(--ink);border-bottom:1px solid var(--line);padding:12px 16px 0}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand b{font-size:26px;letter-spacing:.14em;color:var(--green);font-weight:700}
+.brand span{font-size:12px;opacity:.8}
+nav{display:flex;gap:4px;margin-top:8px}
+nav button{flex:1;background:none;border:0;color:var(--ink);opacity:.6;padding:10px 4px;font:500 13px Poppins,sans-serif;border-bottom:3px solid transparent;cursor:pointer}
+nav button[aria-selected=true]{opacity:1;font-weight:600;border-color:var(--green)}
+nav button:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+main{max-width:760px;margin:0 auto;padding:14px 16px 40px}
+.note{background:var(--chip);border-left:4px solid var(--gold);padding:8px 12px;border-radius:6px;font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+input,select{font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+.filters input{flex:1 1 160px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.tag{align-self:flex-start;background:var(--green);color:var(--gold);font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px}
+.card h3{margin:2px 0 0;font-size:16px;line-height:1.3}
+.meta{color:var(--muted);font-size:13px}
+.price{font-size:20px;font-weight:700}
+.price small{font-size:12px;font-weight:400;color:var(--muted)}
+.btn{background:var(--gold);color:#1a1a05;border:0;border-radius:10px;padding:10px 14px;font:600 14px Poppins,sans-serif;cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.card .row{margin-top:auto;padding-top:6px}
+dialog{border:0;border-radius:16px;padding:0;max-width:440px;width:calc(100% - 28px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(2,20,16,.6)}
+.pad{padding:18px}
+.pad h2{margin:0 0 4px;font-size:18px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+td{padding:6px 0;border-bottom:1px solid var(--line)}td:last-child{text-align:right}
+.total td{font-weight:700;border:0}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:2px}
+.form .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form input,.form select{width:100%}
+.steps{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}
+.steps li{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted)}
+.steps li i{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-style:normal;font-size:12px}
+.steps li.done{color:var(--ink)}.steps li.done i{background:var(--ok);border-color:var(--ok);color:#fff}
+.steps li.now{color:var(--ink);font-weight:600}.steps li.now i{border-color:var(--gold);background:var(--gold);color:#1a1a05}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.stat{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.stat div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;flex:1 1 130px}
+.stat b{display:block;font-size:20px;color:var(--goldink)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--green);color:#fff;border:1px solid var(--gold);padding:10px 16px;border-radius:99px;font-size:14px;z-index:20;max-width:90%}
+@media (prefers-reduced-motion:no-preference){.toast{animation:in .25s ease-out}@keyframes in{from{opacity:0;transform:translate(-50%,8px)}}}
+</style></head>
+<body>
+<header>
+  <div class="brand"><b>REVA</b><span>Raw Materials Hub · Lagos</span></div>
+  <nav role="tablist">
+    <button role="tab" id="t-browse" aria-selected="true" onclick="go('browse')">Browse</button>
+    <button role="tab" id="t-learn" aria-selected="false" onclick="go('learn')">Learn</button>
+    <button role="tab" id="t-sell" aria-selected="false" onclick="go('sell')">Sell</button>
+    <button role="tab" id="t-orders" aria-selected="false" onclick="go('orders')">My orders</button>
+  </nav>
+</header>
+<main id="app"></main>
+<dialog id="dlg"></dialog>
+<script>
+const FEE=0.06; // example commission inside the 5-8% range for raw materials
+const naira=n=>"₦"+Math.round(n).toLocaleString("en-NG");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let L=[
+{id:1,m:"Leather",t:"Leather offcuts, mixed colours",q:"15 kg",c:"Clean",a:"Yaba",p:18000,s:"Workshop"},
+{id:2,m:"Fabric",t:"Ankara and lace scraps",q:"30 kg",c:"Good",a:"Surulere",p:12000,s:"Tailor shop"},
+{id:3,m:"Plastic",t:"Sorted PET bottles, clear",q:"200 kg",c:"Washed",a:"Ikeja",p:30000,s:"Collector"},
+{id:4,m:"Wood",t:"Pallet planks, dry",q:"40 pieces",c:"Used",a:"Mushin",p:20000,s:"Warehouse"},
+{id:5,m:"Paper",t:"Clean cardboard, flattened",q:"120 kg",c:"Dry",a:"Oshodi",p:9600,s:"Business"},
+{id:6,m:"Metal",t:"Aluminium cans, crushed",q:"60 kg",c:"Mixed",a:"Ajegunle",p:27000,s:"Collector"},
+{id:7,m:"Textiles",t:"Used clothes, bale",q:"1 bale",c:"Mixed",a:"Lekki",p:25000,s:"Household"},
+{id:8,m:"Glass",t:"Glass bottles, rinsed",q:"80 pieces",c:"Good",a:"Surulere",p:6400,s:"Household"}];
+let O=[],view="browse",f={q:"",m:"All"},nid=9,oid=1,prem=false,seen={},tm;
+const STEPS=["Payment held in escrow","Collection arranged","Delivery confirmed by buyer","Seller paid, Reva commission taken"];
+function go(v){view=v;["browse","learn","sell","orders"].forEach(x=>document.getElementById("t-"+x).setAttribute("aria-selected",x===v));draw()}
+function toast(t){const e=document.createElement("div");e.className="toast";e.setAttribute("role","status");e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+function draw(){const a=document.getElementById("app");
+ if(view==="browse")a.innerHTML=browse();
+ else if(view==="learn")a.innerHTML=learn();
+ else if(view==="sell")a.innerHTML=sell();
+ else a.innerHTML=orders();
+ document.getElementById("t-orders").textContent="My orders"+(O.length?" ("+O.length+")":"")}
+function browse(){
+ const mats=["All",...new Set(L.map(x=>x.m))];
+ const list=L.filter(x=>(f.m==="All"||x.m===f.m)&&(x.t+x.a+x.m).toLowerCase().includes(f.q.toLowerCase()));
+ return `<div class="note">Prototype with sample listings. Payments and delivery are simulated to show the flow.</div>
+ <div class="filters"><input type="search" placeholder="Search material or area" value="${esc(f.q)}" oninput="f.q=this.value;keep()" aria-label="Search">
+ <select onchange="f.m=this.value;draw()" aria-label="Material">${mats.map(m=>`<option ${m===f.m?"selected":""}>${esc(m)}</option>`).join("")}</select></div>
+ <div class="grid">${list.map(x=>`<article class="card"><span class="tag">${esc(x.m)}</span><h3>${esc(x.t)}</h3>
+ <div class="meta">${esc(x.q)} · ${esc(x.c)} · ${esc(x.a)}, Lagos</div><div class="meta">Seller: ${esc(x.s)}</div>
+ <div class="price">${naira(x.p)}</div><div class="row"><button class="btn" onclick="buy(${x.id})">Buy with escrow</button><button class="btn alt" onclick="offer(${x.id})">Make offer</button></div></article>`).join("")||'<div class="empty">No listings match. Try another material or area.</div>'}</div>`}
+function keep(){const p=f.q;draw();const i=document.querySelector(".filters input");i.focus();i.setSelectionRange(p.length,p.length)}
+function open(h){const d=document.getElementById("dlg");d.innerHTML='<div class="pad">'+h+'</div>';if(!d.open)d.showModal()}
+function close(){document.getElementById("dlg").close()}
+function buy(id,price){const x=L.find(y=>y.id===id),p=price||x.p;
+ open(`<h2>Pay into escrow</h2><div class="meta">${esc(x.t)} · ${esc(x.q)} · ${esc(x.a)}</div>
+ <table><tr><td>Material price</td><td>${naira(p)}</td></tr><tr><td>Reva commission (${FEE*100}%), taken from escrow at release</td><td>${naira(p*FEE)}</td></tr>
+ <tr class="total"><td>You pay now</td><td>${naira(p)}</td></tr></table>
+ <label for="col">Collection</label><select id="col"><option>I will collect it myself</option><option>Use a Reva logistics partner (fee added at checkout)</option></select>
+ <p class="meta">Your money is held by Reva. The seller is paid only after you confirm delivery.</p>
+ <div class="row"><button class="btn" onclick="pay(${id},${p})">Pay ${naira(p)} (demo)</button><button class="btn alt" onclick="close()">Cancel</button></div>`)}
+function pay(id,p){const x=L.find(y=>y.id===id);O.unshift({id:oid++,t:x.t,q:x.q,p:p,s:0,col:document.getElementById("col").value});close();toast("Payment held in escrow");go("orders")}
+function offer(id){const x=L.find(y=>y.id===id);
+ open(`<h2>Make an offer</h2><div class="meta">${esc(x.t)} · listed at ${naira(x.p)}</div>
+ <label for="of">Your offer (₦)</label><input id="of" type="number" inputmode="numeric" value="${Math.round(x.p*.85)}" min="1">
+ <p class="meta">The seller can accept, reject or counter. Commission applies to the final agreed price.</p>
+ <div class="row"><button class="btn" onclick="sendOffer(${id})">Send offer</button><button class="btn alt" onclick="close()">Cancel</button></div>`)}
+function sendOffer(id){const x=L.find(y=>y.id===id),v=+document.getElementById("of").value;
+ if(!(v>0)){toast("Enter an amount above zero");return}
+ const ctr=Math.round((v+x.p)/2/100)*100;
+ open(`<h2>Seller countered</h2><div class="meta">You offered ${naira(v)}. The seller replied with ${naira(ctr)} (simulated).</div>
+ <div class="row" style="margin-top:14px"><button class="btn" onclick="close();buy(${id},${ctr})">Accept ${naira(ctr)}</button><button class="btn alt" onclick="close()">Decline</button></div>`)}
+const T=[
+{id:1,t:"Tote bag from fabric scraps",m:"Fabric",l:"Beginner",d:"25 min",s:["Cut two equal panels and two handle strips from your scraps.","Sew the panels together on three sides, then turn the bag right side out.","Stitch the handles to the top edge and reinforce each join."]},
+{id:2,t:"Plant pots from plastic bottles",m:"Plastic",l:"Beginner",d:"15 min",s:["Wash the bottle and cut it in half below the neck.","Punch drainage holes in the base with a heated nail.","Paint or wrap the outside, fill with soil and plant."]},
+{id:3,t:"Card holder from leather offcuts",m:"Leather",l:"Intermediate",d:"40 min",s:["Cut two rectangles and one smaller pocket piece.","Punch evenly spaced holes along the edges.","Stitch the pieces together with waxed thread and trim the edges."]},
+{id:4,t:"Wall shelf from pallet planks",m:"Wood",l:"Intermediate",d:"60 min",s:["Sand the planks and cut them to length.","Join two planks at a right angle with screws and a bracket.","Seal with varnish and mount to the wall."]},
+{id:5,t:"Notebook covers from cardboard",m:"Paper",l:"Beginner",d:"20 min",s:["Cut two cardboard boards slightly larger than your pages.","Cover them with fabric or printed paper using glue.","Bind the pages between the boards with cord."]}];
+function learn(){return `<div class="note">${prem?"Reva Premium is on: all tutorials are ad-free.":"Free plan: watch a short ad to unlock each tutorial."} Premium (₦3,000/month) adds ad-free learning, offline tutorials, priority listings and a verified creator badge.</div>
+ <div class="row" style="margin-bottom:12px">${prem?'<span class="tag">Premium: ad-free</span>':'<button class="btn" onclick="premium()">Try Premium (demo)</button>'}</div>
+ <div class="grid">${T.map(x=>`<article class="card"><span class="tag">${x.m}</span><h3>${x.t}</h3><div class="meta">${x.l} · ${x.d}</div><div class="row"><button class="btn" onclick="watch(${x.id})">${prem||seen[x.id]?"Open tutorial":"Watch ad to unlock"}</button></div></article>`).join("")}</div>`}
+function premium(){prem=true;toast("Premium on: no ads");draw()}
+function watch(id){if(prem||seen[id]){show(id);return}let n=5;
+ open(`<h2>Sponsored message</h2><div class="note">Ad space for tool and material suppliers, recyclers and brands (demo).</div><div class="row"><button class="btn" disabled>Tutorial starts in <span id="cd">${n}</span>s</button><button class="btn alt" onclick="close()">Cancel</button></div>`);
+ clearInterval(tm);tm=setInterval(()=>{n--;const c=document.getElementById("cd");if(!c){clearInterval(tm);return}c.textContent=n;if(n<=0){clearInterval(tm);seen[id]=1;show(id);draw()}},1000)}
+function show(id){const x=T.find(y=>y.id===id);
+ open(`<h2>${x.t}</h2><div class="meta">${x.l} · ${x.d} · uses ${x.m.toLowerCase()}</div><ol style="padding-left:20px">${x.s.map(s=>`<li style="margin:8px 0">${s}</li>`).join("")}</ol>
+ <div class="row"><button class="btn" onclick="close();f.m='${x.m}';f.q='';go('browse')">Find ${x.m.toLowerCase()} on Reva</button><button class="btn alt" onclick="close()">Done</button></div>`)}
+function sell(){return `<div class="note">Listing is free. Reva only earns when a sale completes.</div>
+ <form class="form" onsubmit="addL(event)"><label for="n">What are you selling?</label><input id="n" required placeholder="e.g. Ankara fabric scraps">
+ <div class="two"><div><label for="mm">Material</label><select id="mm"><option>Plastic</option><option>Fabric</option><option>Leather</option><option>Wood</option><option>Paper</option><option>Metal</option><option>Textiles</option><option>Glass</option></select></div>
+ <div><label for="cc">Condition</label><select id="cc"><option>Clean</option><option>Good</option><option>Mixed</option><option>Used</option></select></div></div>
+ <div class="two"><div><label for="qq">Quantity</label><input id="qq" required placeholder="e.g. 20 kg"></div><div><label for="aa">Area in Lagos</label><input id="aa" required placeholder="e.g. Yaba"></div></div>
+ <label for="pp">Price (₦)</label><input id="pp" type="number" inputmode="numeric" min="1" required>
+ <p class="meta">Photos and KYC verification would be added here in the full version.</p>
+ <button class="btn" type="submit">Publish listing</button></form>`}
+function addL(e){e.preventDefault();const g=i=>document.getElementById(i).value.trim();
+ L.unshift({id:nid++,m:g("mm"),t:g("n"),q:g("qq"),c:g("cc"),a:g("aa"),p:+g("pp"),s:"You"});toast("Listing published");go("browse")}
+function orders(){
+ if(!O.length)return `<div class="empty">No orders yet. Buy a listing to see escrow in action.</div>`;
+ const held=O.filter(o=>o.s<3).reduce((a,o)=>a+o.p,0),earn=O.filter(o=>o.s===3).reduce((a,o)=>a+o.p*FEE,0);
+ return `<div class="stat"><div><b>${naira(held)}</b>held in escrow</div><div><b>${naira(earn)}</b>Reva commission earned</div></div>`+
+ O.map(o=>`<article class="card" style="margin-bottom:12px"><h3>${esc(o.t)}</h3><div class="meta">${esc(o.q)} · ${naira(o.p)} · ${esc(o.col)}</div>
+ <ul class="steps">${STEPS.map((s,i)=>`<li class="${i<=o.s?"done":i===o.s+1?"now":""}"><i>${i<=o.s?"✓":i+1}</i>${s}</li>`).join("")}</ul>
+ ${o.s===3?`<div class="meta">Seller received ${naira(o.p*(1-FEE))}. Reva earned ${naira(o.p*FEE)}.</div>`:
+ `<div class="row"><button class="btn" onclick="adv(${o.id})">${o.s===0?"Arrange collection (demo)":o.s===1?"Mark as delivered (demo)":"Confirm delivery and release payment"}</button></div>`}</article>`).join("")}
+function adv(id){const o=O.find(x=>x.id===id);o.s++;if(o.s===3)toast("Payment released to seller");draw()}
+document.getElementById("dlg").addEventListener("close",()=>clearInterval(tm));
+draw();
+</script></body></html>
